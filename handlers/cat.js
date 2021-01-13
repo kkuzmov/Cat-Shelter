@@ -25,8 +25,48 @@ module.exports = (req, res) =>{
         index.on('error', (err)=>{
             console.log(err);
         })
-    }else if(pathname === '/cats/add-breed' && req.method === 'GET'){
-
+    } else if(pathname === '/cats/add-breed' && req.method === 'GET'){
+        let filePath = path.normalize(
+            path.join(__dirname,'../views/addBreed.html')
+        );
+        const index = fs.createReadStream(filePath);
+        index.on('data', (data)=>{
+            res.write(data);
+        })
+        index.on('end', ()=>{
+            res.end();
+        })
+        index.on('error', (err)=>{
+            console.log(err);
+        })
+    } else if(pathname === '/cats/cat-shelter' && req.method === 'GET'){
+        let filePath = path.normalize(
+            path.join(__dirname,'../views/catShelter.html')
+        );
+        const index = fs.createReadStream(filePath);
+        index.on('data', (data)=>{
+            res.write(data);
+        })
+        index.on('end', ()=>{
+            res.end();
+        })
+        index.on('error', (err)=>{
+            console.log(err);
+        })
+    } else if(pathname === '/cats/edit-cat' && req.method === 'GET'){
+        let filePath = path.normalize(
+            path.join(__dirname,'../views/editCat.html')
+        );
+        const index = fs.createReadStream(filePath);
+        index.on('data', (data)=>{
+            res.write(data);
+        })
+        index.on('end', ()=>{
+            res.end();
+        })
+        index.on('error', (err)=>{
+            console.log(err);
+        })
     }
     else {
         return true;
