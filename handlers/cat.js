@@ -69,12 +69,13 @@ module.exports = (req, res) => {
         })
     } else if (pathname === '/cats/add-breed' && req.method === 'POST') {
         let formData = '';
+
         req.on('data', (data) => {
             formData += data;
         })
         req.on('end', () => {
-            let body = fs.parse(formData);
-
+            let body = qs.parse(formData);
+            console.log(body)
             fs.readFile('./data/breeds.json', (err, data) => {
                 if (err) {
                     throw err;
@@ -83,15 +84,18 @@ module.exports = (req, res) => {
                 let breeds = JSON.parse(data);
                 breeds.push(body.breed);
                 let json = JSON.stringify(breeds);
+
                 fs.writeFile('./data/breeds.json', json, 'utf-8', () => console.log('The breed was uploaded succesfully!'))
             })
 
-            res.writeHead(302, { location: '/' });
+            res.writeHead(302, {location: '/'});
             res.end();
         })
     } else {
         return true;
     }
+
+
 
 
 }
