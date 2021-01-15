@@ -17,7 +17,9 @@ module.exports = (req, res) => {
         );
         const index = fs.createReadStream(filePath);
         index.on('data', (data) => {
-            res.write(data);
+            let catBreedPlaceholder = breeds.map((breed)=> `<option value=${breed}>${breed}</option>`);
+            let modifiedData = data.toString().replace('{{catBreeds}}', catBreedPlaceholder);
+            res.write(modifiedData);
         })
         index.on('end', () => {
             res.end();
@@ -75,7 +77,6 @@ module.exports = (req, res) => {
         })
         req.on('end', () => {
             let body = qs.parse(formData);
-            console.log(body)
             fs.readFile('./data/breeds.json', (err, data) => {
                 if (err) {
                     throw err;
@@ -90,6 +91,31 @@ module.exports = (req, res) => {
 
             res.writeHead(302, {location: '/'});
             res.end();
+        })
+    } else if (pathname === '/cats/add-cat' && req.method === 'POST') {
+        let form = new formidable.IncomingForm();
+
+        form.parse(req, (err,fields, files)=>{
+            if(err) throw err;
+            let globalPath = 'C:/Users/Kuzmov/Desktop/Cat_shelter/Cat-Shelter';
+            let oldPath = files.upload.path;
+            let newPath = path.normalize(path.join(globalPath, '/content/images/' + files.upload.name));
+
+            fs.rename(oldPath, newPath, (err)=>{
+                if(err) throw err;
+                console.log('Files were uploaded successfully')
+            })
+            fs.readFile('./data/cats.json', 'utf-8', (err, data)=>{
+                if(err) throw err;
+                
+                let allCats = JSON.parse(data);
+                allCats.push({id: cats.length + 1, ...fields, image: files.upload.name});
+                let json = JSON.stringify(allCats);
+                fs.writeFile('./data/cats.json', json, () => {
+                    res.writeHead(302, {location: '/'});
+                    res.end();
+                })
+            })
         })
     } else {
         return true;
