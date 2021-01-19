@@ -7,6 +7,8 @@ const breeds = require('../data/breeds');
 const cats = require('../data/cats.json');
 const globalPath = __dirname.toString().replace('handlers', '');
 
+// ИЗМИСЛИ ПО-ДОБЪР ВАРИАНТ ЗА ВЗИМАНЕ/НАСРОЧВАНЕ НА ID, ЗАЩОТО ТАКА ПРОМЕНЯ ЛОГИКАТА И ОБЪРКВА СПИСЪКА С КОТКИ!
+
 module.exports = (req, res) => {
 
     const pathname = url.parse(req.url).pathname;
@@ -86,7 +88,6 @@ module.exports = (req, res) => {
         form.parse(req, (err, fields, files) => {
             if (err) throw err;
             let oldPath = files.upload.path;
-            console.log(files);
             let newPath = path.normalize(path.join(globalPath, '/content/images/' + files.upload.name));
 
             fs.rename(oldPath, newPath, (err) => {
@@ -115,7 +116,6 @@ module.exports = (req, res) => {
         const filePath = path.normalize(path.join(__dirname, '../views/editCat.html'));
         fs.readFile(filePath, (err, data) => {
             if (err) {
-                console.log(err);
                 res.writeHead(404, { 'Content-Type': 'text/plain' });
                 res.write('404 File Not Found');
                 res.end();
@@ -139,7 +139,6 @@ module.exports = (req, res) => {
         </form>`
             const placeholder = breeds.map(breed => `<option value="${breed}">${breed}</option>`);
             editForm = editForm.replace('{{catBreeds}}', placeholder);
-    
             const modifiedData = data.toString().replace('{{edit}}', editForm);
     
             res.writeHead(200, { 'Content-Type': 'text/html' });
@@ -212,7 +211,22 @@ module.exports = (req, res) => {
             })
         })
     } else if (pathname.includes('/cats-find-new-home') && req.method === 'POST') {
+        fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
+            if (err) throw err;
 
+            let id = pathname.slice(pathname.length - 1); // correct
+
+            let allCats = JSON.parse(data);
+            allCats.splice((id - 1), 1);
+            let json = JSON.stringify(allCats);
+            fs.writeFile('./data/cats.json', json, () => {
+                console.log(`Found a new home for kitten`)
+                res.writeHead(301, {
+                    location: '/'
+                });
+                res.end();
+            })
+        })
     } else {
         return true;
     }
