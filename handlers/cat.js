@@ -116,7 +116,9 @@ module.exports = (req, res) => {
         const filePath = path.normalize(path.join(__dirname, '../views/editCat.html'));
         fs.readFile(filePath, (err, data) => {
             if (err) {
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
                 res.write('404 File Not Found');
                 res.end();
                 return;
@@ -140,8 +142,10 @@ module.exports = (req, res) => {
             const placeholder = breeds.map(breed => `<option value="${breed}">${breed}</option>`);
             editForm = editForm.replace('{{catBreeds}}', placeholder);
             const modifiedData = data.toString().replace('{{edit}}', editForm);
-    
-            res.writeHead(200, { 'Content-Type': 'text/html' });
+
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
             res.write(modifiedData);
             res.end();
         });
@@ -152,7 +156,9 @@ module.exports = (req, res) => {
         fs.readFile(filePath, (err, data) => {
             if (err) {
                 console.log(err);
-                res.writeHead(404, { 'Content-Type': 'text/plain' });
+                res.writeHead(404, {
+                    'Content-Type': 'text/plain'
+                });
                 res.write('404 File Not Found');
                 res.end();
                 return;
@@ -172,9 +178,11 @@ module.exports = (req, res) => {
             </select>
             <button>SHELTER THE CAT</button>
             </form>`
-          
+
             const modifiedData = data.toString().replace('{{shelter}}', editForm);
-            res.writeHead(200, { 'Content-Type': 'text/html' });
+            res.writeHead(200, {
+                'Content-Type': 'text/html'
+            });
             res.write(modifiedData);
             res.end();
         });
@@ -193,11 +201,12 @@ module.exports = (req, res) => {
             fs.readFile('./data/cats.json', 'utf-8', (err, data) => {
                 if (err) throw err;
 
-                let id = pathname.slice(pathname.length - 1); // correct
-
+                let id = Number(pathname.split('/').pop()) // correct
                 let allCats = JSON.parse(data);
-                allCats.splice((id - 1), 1, {
-                    id,
+                let currentCat = allCats.find(cat => cat.id == id);
+                let indexOfCurrCat = allCats.indexOf(currentCat);
+                allCats.splice(indexOfCurrCat, 1, {
+                    id: Number(id),
                     ...fields,
                     image: files.upload.name
                 })
@@ -217,10 +226,15 @@ module.exports = (req, res) => {
             let id = pathname.slice(pathname.length - 1); // correct
 
             let allCats = JSON.parse(data);
-            allCats.splice((id - 1), 1);
+            let currentCat = allCats.find(cat => cat.id == id);
+            console.log(`Current cat is ${currentCat}`);
+            let indexOfCurrCat = allCats.indexOf(currentCat);
+            console.log(`ID is ${id}`);
+            console.log(`Index of deleted cat is ${indexOfCurrCat}`);
+            allCats.splice(indexOfCurrCat, 1);
             let json = JSON.stringify(allCats);
             fs.writeFile('./data/cats.json', json, () => {
-                console.log(`Found a new home for kitten`)
+                console.log(`Found a new home for ${currentCat.name}`)
                 res.writeHead(301, {
                     location: '/'
                 });
