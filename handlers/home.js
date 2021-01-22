@@ -25,7 +25,7 @@ module.exports = (req, res) =>{
                 <li class="btn delete"><a href="/cats-find-new-home/${cat.id}">New home</a></li>
             </ul>
             </li>`);
-            let modifiedData = data.toString().replace('{{cats}}', modifiedCats.join('')); // трябва ли Join??!
+            let modifiedData = data.toString().replace('{{cats}}', modifiedCats.join('')); 
 
             res.writeHead(200, {
                 'Content-Type': 'text/html'

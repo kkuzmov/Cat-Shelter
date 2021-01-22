@@ -7,7 +7,6 @@ const breeds = require('../data/breeds');
 const cats = require('../data/cats.json');
 const globalPath = __dirname.toString().replace('handlers', '');
 
-// ИЗМИСЛИ ПО-ДОБЪР ВАРИАНТ ЗА ВЗИМАНЕ/НАСРОЧВАНЕ НА ID, ЗАЩОТО ТАКА ПРОМЕНЯ ЛОГИКАТА И ОБЪРКВА СПИСЪКА С КОТКИ!
 
 module.exports = (req, res) => {
 
@@ -89,7 +88,9 @@ module.exports = (req, res) => {
             if (err) throw err;
             let oldPath = files.upload.path;
             let newPath = path.normalize(path.join(globalPath, '/content/images/' + files.upload.name));
-
+            console.log(files);
+            console.log(oldPath);
+            console.log(fields);
             fs.rename(oldPath, newPath, (err) => {
                 if (err) throw err;
                 console.log('Files were uploaded successfully')
